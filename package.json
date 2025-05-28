@@ -1,44 +1,15 @@
 {
-  "name": "nodejs-jenkins-app",
+  "name": "practical4",
   "version": "1.0.0",
-  "description": "Simple Node.js app with Jenkins CI/CD pipeline",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js",
-    "test": "jest --coverage --ci --reporters=default --reporters=jest-junit",
-    "test:watch": "jest --watch",
-    "build": "echo 'Build completed successfully'",
-    "lint": "eslint ."
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["nodejs", "express", "jenkins", "ci/cd"],
-  "author": "Your Name",
-  "license": "MIT",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
   "dependencies": {
-    "express": "^4.18.2"
+    "express": "^5.1.0"
   },
-  "devDependencies": {
-    "jest": "^29.5.0",
-    "supertest": "^6.3.3",
-    "nodemon": "^2.0.22",
-    "eslint": "^8.41.0",
-    "jest-junit": "^16.0.0"
-  },
-  "jest": {
-    "testEnvironment": "node",
-    "collectCoverageFrom": [
-      "**/*.js",
-      "!node_modules/**",
-      "!coverage/**",
-      "!jest.config.js"
-    ],
-    "coverageReporters": ["text", "lcov", "html"],
-    "reporters": [
-      "default",
-      ["jest-junit", {
-        "outputDirectory": ".",
-        "outputName": "junit.xml"
-      }]
-    ]
-  }
+  "description": ""
 }

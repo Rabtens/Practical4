@@ -1,197 +1,179 @@
+// Simple Node.js Express Application
 const express = require('express');
 const path = require('path');
 
+// Create Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // Parse JSON bodies
+app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
+app.use(express.static('public')); // Serve static files
 
-// Sample data
+// Sample data (in a real app, this would be a database)
 let users = [
-  { id: 1, name: 'John Doe', email: 'john@example.com', active: true },
-  { id: 2, name: 'Jane Smith', email: 'jane@example.com', active: true }
+  { id: 1, name: 'Alice', email: 'alice@example.com' },
+  { id: 2, name: 'Bob', email: 'bob@example.com' }
 ];
-
-// Helper functions
-const findUserById = (id) => users.find(user => user.id === parseInt(id));
-const getNextId = () => users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1;
 
 // Routes
 app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to Node.js Jenkins CI/CD Demo',
-    version: '1.0.0',
-    endpoints: {
-      users: '/api/users',
-      health: '/health',
-      status: '/status'
-    }
-  });
+  res.send(`
+    <html>
+      <head>
+        <title>Simple Node.js App</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 40px; }
+          .container { max-width: 600px; }
+          button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+          .user { padding: 10px; border: 1px solid #ddd; margin: 5px 0; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Welcome to Simple Node.js App</h1>
+          <p>This is a basic Express.js application with a simple API.</p>
+          
+          <h2>Available Endpoints:</h2>
+          <ul>
+            <li><strong>GET /</strong> - This home page</li>
+            <li><strong>GET /api/users</strong> - Get all users</li>
+            <li><strong>GET /api/users/:id</strong> - Get user by ID</li>
+            <li><strong>POST /api/users</strong> - Create new user</li>
+            <li><strong>PUT /api/users/:id</strong> - Update user</li>
+            <li><strong>DELETE /api/users/:id</strong> - Delete user</li>
+          </ul>
+
+          <h2>Test the API:</h2>
+          <button onclick="getUsers()">Get All Users</button>
+          <button onclick="addUser()">Add Sample User</button>
+          <div id="results"></div>
+
+          <script>
+            async function getUsers() {
+              try {
+                const response = await fetch('/api/users');
+                const users = await response.json();
+                document.getElementById('results').innerHTML = 
+                  '<h3>Users:</h3>' + 
+                  users.map(user => 
+                    '<div class="user">' + 
+                    '<strong>' + user.name + '</strong> - ' + user.email + 
+                    '</div>'
+                  ).join('');
+              } catch (error) {
+                console.error('Error:', error);
+              }
+            }
+
+            async function addUser() {
+              try {
+                const response = await fetch('/api/users', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    name: 'New User',
+                    email: 'newuser@example.com'
+                  })
+                });
+                const user = await response.json();
+                alert('User added: ' + user.name);
+                getUsers(); // Refresh the list
+              } catch (error) {
+                console.error('Error:', error);
+              }
+            }
+          </script>
+        </div>
+      </body>
+    </html>
+  `);
 });
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
-});
-
-// Status endpoint
-app.get('/status', (req, res) => {
-  res.json({
-    service: 'nodejs-jenkins-app',
-    status: 'running',
-    environment: process.env.NODE_ENV || 'development',
-    version: '1.0.0'
-  });
-});
-
-// User API endpoints
+// API Routes
+// Get all users
 app.get('/api/users', (req, res) => {
-  const activeUsers = users.filter(user => user.active);
-  res.json({
-    success: true,
-    count: activeUsers.length,
-    data: activeUsers
-  });
+  res.json(users);
 });
 
+// Get user by ID
 app.get('/api/users/:id', (req, res) => {
-  const user = findUserById(req.params.id);
+  const userId = parseInt(req.params.id);
+  const user = users.find(u => u.id === userId);
   
   if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: 'User not found'
-    });
+    return res.status(404).json({ error: 'User not found' });
   }
   
-  if (!user.active) {
-    return res.status(404).json({
-      success: false,
-      message: 'User not found'
-    });
-  }
-  
-  res.json({
-    success: true,
-    data: user
-  });
+  res.json(user);
 });
 
+// Create new user
 app.post('/api/users', (req, res) => {
   const { name, email } = req.body;
   
   if (!name || !email) {
-    return res.status(400).json({
-      success: false,
-      message: 'Name and email are required'
-    });
-  }
-  
-  // Check if email already exists
-  const existingUser = users.find(user => user.email === email);
-  if (existingUser) {
-    return res.status(409).json({
-      success: false,
-      message: 'Email already exists'
-    });
+    return res.status(400).json({ error: 'Name and email are required' });
   }
   
   const newUser = {
-    id: getNextId(),
-    name: name.trim(),
-    email: email.trim().toLowerCase(),
-    active: true
+    id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
+    name,
+    email
   };
   
   users.push(newUser);
-  
-  res.status(201).json({
-    success: true,
-    message: 'User created successfully',
-    data: newUser
-  });
+  res.status(201).json(newUser);
 });
 
+// Update user
 app.put('/api/users/:id', (req, res) => {
-  const user = findUserById(req.params.id);
+  const userId = parseInt(req.params.id);
+  const userIndex = users.findIndex(u => u.id === userId);
   
-  if (!user || !user.active) {
-    return res.status(404).json({
-      success: false,
-      message: 'User not found'
-    });
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'User not found' });
   }
   
   const { name, email } = req.body;
   
-  if (name) user.name = name.trim();
-  if (email) {
-    // Check if email already exists for another user
-    const existingUser = users.find(u => u.email === email && u.id !== user.id);
-    if (existingUser) {
-      return res.status(409).json({
-        success: false,
-        message: 'Email already exists'
-      });
-    }
-    user.email = email.trim().toLowerCase();
-  }
+  if (name) users[userIndex].name = name;
+  if (email) users[userIndex].email = email;
   
-  res.json({
-    success: true,
-    message: 'User updated successfully',
-    data: user
-  });
+  res.json(users[userIndex]);
 });
 
+// Delete user
 app.delete('/api/users/:id', (req, res) => {
-  const user = findUserById(req.params.id);
+  const userId = parseInt(req.params.id);
+  const userIndex = users.findIndex(u => u.id === userId);
   
-  if (!user || !user.active) {
-    return res.status(404).json({
-      success: false,
-      message: 'User not found'
-    });
+  if (userIndex === -1) {
+    return res.status(404).json({ error: 'User not found' });
   }
   
-  // Soft delete
-  user.active = false;
-  
-  res.json({
-    success: true,
-    message: 'User deleted successfully'
-  });
+  const deletedUser = users.splice(userIndex, 1)[0];
+  res.json({ message: 'User deleted', user: deletedUser });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({
-    success: false,
-    message: 'Internal server error'
-  });
+  res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// 404 handler
+// Handle 404
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found'
-  });
+  res.status(404).json({ error: 'Route not found' });
 });
 
-// Start server (only if not in test environment)
-if (process.env.NODE_ENV !== 'test') {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  });
-}
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Try visiting http://localhost:${PORT} in your browser`);
+});
 
 module.exports = app;
