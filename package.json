@@ -1,9 +1,10 @@
 {
   "name": "practical4",
   "version": "1.0.0",
+  "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -11,5 +12,20 @@
   "dependencies": {
     "express": "^5.1.0"
   },
-  "description": ""
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-junit": "^16.0.0"
+  },
+  "jest": {
+    "reporters": [
+      "default",
+      [
+        "jest-junit",
+        {
+          "outputDirectory": ".",
+          "outputName": "junit.xml"
+        }
+      ]
+    ]
+  }
 }
