@@ -5,6 +5,7 @@ pipeline {
   }
   environment {
     CI = 'true'
+    IMAGE_NAME = 'rabtens/jenkins-node-app'
   }
   stages {
     stage('Install') {
@@ -22,13 +23,12 @@ pipeline {
         sh 'npm test'
       }
     }
-    stage('Deploy') {
+    stage('Docker Build & Push') {
       steps {
         script {
-          if (env.BRANCH_NAME == 'main') {
-            echo 'Deploying to production...'
-          } else {
-            echo 'Deploying to staging...'
+          docker.withRegistry('', 'dockerhub') {
+            def app = docker.build("${IMAGE_NAME}:${env.BUILD_NUMBER}")
+            app.push()
           }
         }
       }
