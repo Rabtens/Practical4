@@ -1,6 +1,6 @@
 @Library('my-shared-lib')_
 
-nodejsPipeline(
+nodePipeline(
     appDir: 'app' , 
     nodeVersion: '18', 
     imageName: 'rabtens/app' // optional if using default
