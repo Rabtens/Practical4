@@ -1,3 +1,5 @@
-@Library('my-shared-lib') _
-nodePipeline(imageName: 'my-node-app')
-
+nodePipeline(
+    appDir: 'example-app',
+    nodeVersion: '18',
+    imageName: 'rabtens/my-node-app'
+)
