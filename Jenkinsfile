@@ -1,3 +1,5 @@
+@Library('my-shared-lib') _
+
 nodePipeline(
     appDir: 'example-app',
     nodeVersion: '18',
