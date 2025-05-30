@@ -1,5 +1,6 @@
 @Library('my-shared-lib') _
-
 nodePipeline(
-    imageName: 'rabtens/my-node-app'
+  nodejsTool: 'NodeJS 24.0.2',
+  dockerImage: 'rabtens/simple-node-app',
+  imageTag: 'latest'
 )
