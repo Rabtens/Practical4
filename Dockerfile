@@ -1,20 +1,13 @@
-# Base image
-FROM node:20-alpine
+FROM node:14-alpine
 
-# Set working directory
-WORKDIR /app
+WORKDIR /usr/src/app
 
-# Copy dependency files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci
+RUN npm install
 
-# Copy source files
 COPY . .
 
-# Expose app port (change if needed)
 EXPOSE 3000
 
-# Start the app
 CMD ["npm", "start"]
