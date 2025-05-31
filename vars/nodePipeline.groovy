@@ -30,7 +30,7 @@ def call(Map config = [:]) {
             stage('Build Docker Image') {
                 steps {
                     script {
-                        dockerImage = docker.build("${config.imageName}", "app/.")
+                        def dockerImage = docker.build("${config.imageName}", "app/.")
                     }
                 }
             }
