@@ -2,7 +2,7 @@ def call(Map config = [:]) {
   pipeline {
     agent any
     tools {
-      nodejs 'NodeJS-20.x'
+      nodejs 'NodeJS-24.0.2'
     }
     environment {
       DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
