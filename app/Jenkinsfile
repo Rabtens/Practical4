@@ -1,2 +1,2 @@
-@Library('shared-lib') _
+@Library('my-shared-lib') _
 nodePipeline(imageName: 'rabtens/my-node-app')
