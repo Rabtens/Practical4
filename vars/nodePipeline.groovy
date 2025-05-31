@@ -7,7 +7,7 @@ def call(Map config = [:]) {
         }
 
         environment {
-            DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+            DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials')
         }
 
         stages {
